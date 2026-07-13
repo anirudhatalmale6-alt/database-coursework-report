@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Funding Application</title>
+<style>
+:root{
+  --navy:#0f2340;--blue:#1a5fb4;--blue2:#2b7de9;--green:#12a150;--green2:#0d7a3d;
+  --ink:#12233b;--muted:#5c6b80;--line:#e2e8f2;--bg:#f4f7fb;--card:#ffffff;
+  --err:#d13c3c;--radius:14px;--shadow:0 10px 30px rgba(15,35,64,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+
+/* Header */
+header{background:var(--navy);color:#fff;position:sticky;top:0;z-index:40;box-shadow:0 2px 14px rgba(0,0,0,.14)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:66px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:20px;letter-spacing:-.02em}
+.brand .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--blue2),var(--green));display:grid;place-items:center;font-size:18px;font-weight:900;color:#fff}
+.brand .g{color:#63d99a}
+.head-right{display:flex;align-items:center;gap:18px;white-space:nowrap}
+.phone{font-weight:700;font-size:15px;color:#dbe7ff}
+.phone span{opacity:.7;font-weight:500}
+.secure{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#a9c0e6}
+@media(max-width:680px){.phone{display:none}.secure{display:none}}
+
+/* Hero */
+.hero{background:linear-gradient(160deg,var(--navy) 0%,#143a6b 100%);color:#fff;padding:44px 0 92px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-80px;top:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(43,125,233,.35),transparent 70%);border-radius:50%}
+.hero h1{font-size:34px;line-height:1.15;letter-spacing:-.02em;max-width:720px;font-weight:800}
+.hero p{margin-top:14px;font-size:17px;color:#cdddf5;max-width:620px}
+.trust{display:flex;flex-wrap:wrap;gap:22px;margin-top:26px}
+.trust div{display:flex;align-items:center;gap:9px;font-size:14.5px;color:#e6eefb;font-weight:600}
+.trust .ic{width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:14px}
+@media(max-width:640px){.hero h1{font-size:27px}.hero{padding:34px 0 84px}}
+
+/* Card */
+.form-card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);margin:-64px auto 60px;max-width:820px;position:relative;z-index:5;overflow:hidden}
+.progress{display:flex;background:#f7f9fd;border-bottom:1px solid var(--line)}
+.pstep{flex:1;text-align:center;padding:15px 6px;font-size:12.5px;font-weight:700;color:#9aa8bd;position:relative}
+.pstep .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#e4eaf3;color:#8fa0b8;font-size:12.5px;margin-bottom:5px;transition:.25s}
+.pstep.active{color:var(--blue)}
+.pstep.active .num{background:var(--blue);color:#fff}
+.pstep.done{color:var(--green2)}
+.pstep.done .num{background:var(--green);color:#fff}
+.pstep .num.check::after{content:"\2713"}
+@media(max-width:560px){.pstep .lbl{display:none}.pstep{padding:14px 4px}}
+
+.form-body{padding:34px 40px 40px}
+@media(max-width:560px){.form-body{padding:26px 20px 30px}}
+.step{display:none;animation:fade .35s ease}
+.step.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.step h2{font-size:22px;letter-spacing:-.01em;margin-bottom:4px}
+.step .sub{color:var(--muted);font-size:14.5px;margin-bottom:22px}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 18px}
+.grid .full{grid-column:1/-1}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13.5px;font-weight:600;color:#2c3e57}
+.field label .req{color:var(--err)}
+.field input,.field select,.field textarea{
+  width:100%;padding:12px 13px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s;outline:none}
+.field textarea{resize:vertical;min-height:88px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(43,125,233,.13)}
+.field.err input,.field.err select,.field.err textarea{border-color:var(--err);box-shadow:0 0 0 3px rgba(209,60,60,.10)}
+.field .hint{font-size:12px;color:var(--muted)}
+.field .msg{font-size:12px;color:var(--err);display:none}
+.field.err .msg{display:block}
+.prefix{position:relative}
+.prefix span{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:600;pointer-events:none}
+.prefix input{padding-left:26px}
+
+/* checkbox purpose grid */
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.chips{grid-template-columns:1fr}}
+.chip{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;cursor:pointer;font-size:14px;font-weight:500;transition:.15s;user-select:none}
+.chip:hover{border-color:#bcd0ee;background:#f8fbff}
+.chip input{width:17px;height:17px;accent-color:var(--blue);flex:none}
+.chip.sel{border-color:var(--blue);background:#eef5ff;color:var(--blue)}
+
+.toggle-row{display:flex;gap:10px;margin-top:2px}
+.toggle{flex:1;text-align:center;border:1.5px solid var(--line);border-radius:10px;padding:11px;cursor:pointer;font-weight:600;font-size:14.5px;transition:.15s}
+.toggle:hover{border-color:#bcd0ee}
+.toggle.on{border-color:var(--blue);background:#eef5ff;color:var(--blue)}
+
+.divider{height:1px;background:var(--line);margin:26px 0 22px}
+.addowner-box{border:1.5px dashed var(--line);border-radius:12px;padding:18px;background:#fafcff}
+.addowner-fields{margin-top:18px;display:none}
+.addowner-fields.show{display:block}
+
+/* nav buttons */
+.actions{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:30px}
+.btn{border:none;border-radius:11px;padding:13px 26px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:.18s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:linear-gradient(135deg,var(--blue) 0%,var(--blue2) 100%);color:#fff;box-shadow:0 6px 16px rgba(26,95,180,.28)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 9px 20px rgba(26,95,180,.34)}
+.btn-submit{background:linear-gradient(135deg,var(--green2) 0%,var(--green) 100%);color:#fff;box-shadow:0 6px 16px rgba(18,161,80,.28)}
+.btn-submit:hover{transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--muted);padding:13px 8px}
+.btn-ghost:hover{color:var(--ink)}
+.btn:disabled{opacity:.6;cursor:default;transform:none}
+.step-count{font-size:13px;color:var(--muted);font-weight:600}
+
+/* review */
+.review-group{margin-bottom:20px}
+.review-group h3{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--blue);margin-bottom:10px;font-weight:800}
+.review-list{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px}
+@media(max-width:560px){.review-list{grid-template-columns:1fr}}
+.review-list .r{display:flex;flex-direction:column;font-size:14px;padding:7px 0;border-bottom:1px solid #f0f3f8}
+.review-list .r .k{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;font-weight:700}
+.review-list .r .v{color:var(--ink);font-weight:500;word-break:break-word}
+.consent{display:flex;gap:11px;align-items:flex-start;margin-top:20px;background:#f7f9fd;border:1px solid var(--line);border-radius:11px;padding:15px}
+.consent input{width:19px;height:19px;accent-color:var(--green);flex:none;margin-top:1px}
+.consent label{font-size:12.5px;color:var(--muted);line-height:1.55}
+
+/* success */
+.success{display:none;text-align:center;padding:26px 10px}
+.success .ok{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--green2),var(--green));display:grid;place-items:center;margin:0 auto 20px;font-size:40px;color:#fff}
+.success h2{font-size:26px;margin-bottom:10px}
+.success p{color:var(--muted);font-size:16px;max-width:440px;margin:0 auto 8px}
+.success .callnow{margin-top:22px;display:inline-block;font-weight:700;color:var(--blue)}
+
+/* footer */
+footer{background:var(--navy);color:#9fb2cc;padding:30px 0;text-align:center;font-size:13px}
+footer .disc{max-width:760px;margin:12px auto 0;font-size:11.5px;color:#6f84a3;line-height:1.6}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="#" class="brand"><span class="logo">$</span><span>Funding<span class="g">Source</span></span></a>
+    <div class="head-right">
+      <div class="secure">&#128274; Bank-level 256-bit encryption</div>
+      <a href="tel:+15162416738" class="phone"><span>Call</span> (516) 241-6738</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>Get the working capital your business needs &mdash; in as little as 24 hours.</h1>
+    <p>One short application. No obligation, no impact to your credit to see your options. Funding from $10,000 to $2,000,000.</p>
+    <div class="trust">
+      <div><span class="ic">&#9889;</span> Approvals in 24 hours</div>
+      <div><span class="ic">&#128179;</span> No cost to apply</div>
+      <div><span class="ic">&#128736;</span> All credit types</div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+<div class="form-card" id="card">
+
+  <div class="progress" id="progress">
+    <div class="pstep active" data-i="0"><div class="num">1</div><div class="lbl">Funding</div></div>
+    <div class="pstep" data-i="1"><div class="num">2</div><div class="lbl">Business</div></div>
+    <div class="pstep" data-i="2"><div class="num">3</div><div class="lbl">Owner</div></div>
+    <div class="pstep" data-i="3"><div class="num">4</div><div class="lbl">Review</div></div>
+  </div>
+
+  <form id="appForm" class="form-body" novalidate>
+
+    <!-- STEP 1 : FUNDING NEEDS -->
+    <div class="step active" data-step="0">
+      <h2>How much funding do you need?</h2>
+      <p class="sub">Tell us the basics so we can match you with the right offer.</p>
+      <div class="grid">
+        <div class="field">
+          <label>Amount Requested <span class="req">*</span></label>
+          <div class="prefix"><span>$</span><input type="text" inputmode="numeric" name="amount_requested" data-req placeholder="50,000"></div>
+          <div class="msg">Please enter an amount.</div>
+        </div>
+        <div class="field">
+          <label>Annual Business Revenue <span class="req">*</span></label>
+          <div class="prefix"><span>$</span><input type="text" inputmode="numeric" name="annual_revenue" data-req placeholder="250,000"></div>
+          <div class="msg">Please enter your annual revenue.</div>
+        </div>
+        <div class="field full">
+          <label>What will you use the funds for? <span class="req">*</span></label>
+          <div class="chips" id="purposeChips">
+            <label class="chip"><input type="checkbox" name="use_of_funds" value="Working Capital">Working Capital</label>
+            <label class="chip"><input type="checkbox" name="use_of_funds" value="Expansion / Growth">Expansion / Growth</label>
+            <label class="chip"><input type="checkbox" name="use_of_funds" value="Equipment Purchase">Equipment Purchase</label>
+            <label class="chip"><input type="checkbox" name="use_of_funds" value="Inventory">Inventory</label>
+            <label class="chip"><input type="checkbox" name="use_of_funds" value="Marketing / Advertising">Marketing / Advertising</label>
+            <label class="chip"><input type="checkbox" name="use_of_funds" value="Payroll">Payroll</label>
+            <label class="chip"><input type="checkbox" name="use_of_funds" value="Debt Refinance / Consolidation">Debt Refinance</label>
+            <label class="chip"><input type="checkbox" name="use_of_funds" value="Renovation / Buildout">Renovation / Buildout</label>
+            <label class="chip"><input type="checkbox" name="use_of_funds" value="Other">Other</label>
+          </div>
+          <div class="msg" id="purposeMsg">Please select at least one.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 : BUSINESS INFO -->
+    <div class="step" data-step="1">
+      <h2>Tell us about your business</h2>
+      <p class="sub">This helps us verify your business and speed up approval.</p>
+      <div class="grid">
+        <div class="field full">
+          <label>Business Legal Name <span class="req">*</span></label>
+          <input type="text" name="legal_name" data-req placeholder="ABC Enterprises LLC">
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field full">
+          <label>Is your DBA (doing-business-as) name the same as your legal name?</label>
+          <div class="toggle-row" id="dbaToggle">
+            <div class="toggle on" data-v="yes">Yes, same</div>
+            <div class="toggle" data-v="no">No, different</div>
+          </div>
+          <input type="hidden" name="dba_same" value="yes">
+        </div>
+        <div class="field full" id="dbaField" style="display:none">
+          <label>DBA Name <span class="req">*</span></label>
+          <input type="text" name="dba_name" placeholder="ABC Store">
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Tax ID / EIN <span class="req">*</span></label>
+          <input type="text" name="ein" data-req placeholder="12-3456789">
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Business Phone <span class="req">*</span></label>
+          <input type="tel" name="business_phone" data-req placeholder="(555) 123-4567">
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Company Type <span class="req">*</span></label>
+          <select name="company_type" data-req>
+            <option value="">Please Select</option>
+            <option>Sole Prop</option><option>Partnership</option><option>S-Corp</option>
+            <option>Corporation</option><option>LLC</option><option>LLP</option>
+          </select>
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>State of Incorporation <span class="req">*</span></label>
+          <select name="state_incorp" data-req id="stateSel"><option value="">Please Select</option></select>
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Business Start Date <span class="req">*</span></label>
+          <input type="text" name="start_date" data-req placeholder="MM/YYYY" maxlength="7">
+          <div class="hint">Month and year is fine</div>
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Industry <span class="req">*</span></label>
+          <select name="industry" data-req id="industrySel"><option value="">Please Select</option></select>
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field full">
+          <label>Business Address <span class="req">*</span></label>
+          <input type="text" name="business_address" data-req placeholder="Street, City, State, ZIP">
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Business Website</label>
+          <input type="text" name="website" placeholder="www.yourbusiness.com">
+        </div>
+        <div class="field full">
+          <label>Brief Business Description</label>
+          <textarea name="description" placeholder="What does your business do?"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 : OWNER INFO -->
+    <div class="step" data-step="2">
+      <h2>Owner information</h2>
+      <p class="sub">We just need the primary owner&rsquo;s details to finalize your application.</p>
+      <div class="grid">
+        <div class="field">
+          <label>First Name <span class="req">*</span></label>
+          <input type="text" name="owner_first" data-req>
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Last Name <span class="req">*</span></label>
+          <input type="text" name="owner_last" data-req>
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Mobile Number <span class="req">*</span></label>
+          <input type="tel" name="owner_mobile" data-req placeholder="(555) 123-4567">
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <input type="email" name="owner_email" data-req placeholder="you@email.com">
+          <div class="msg">Enter a valid email.</div>
+        </div>
+        <div class="field">
+          <label>Date of Birth <span class="req">*</span></label>
+          <input type="text" name="owner_dob" data-req placeholder="MM/DD/YYYY" maxlength="10">
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Ownership % <span class="req">*</span></label>
+          <div class="prefix" style="direction:rtl"><span style="left:auto;right:13px">%</span><input style="padding-left:13px;padding-right:26px;text-align:left;direction:ltr" type="text" inputmode="numeric" name="owner_pct" data-req placeholder="100"></div>
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Social Security Number <span class="req">*</span></label>
+          <input type="text" name="owner_ssn" data-req placeholder="XXX-XX-XXXX" maxlength="11">
+          <div class="hint">&#128274; Encrypted &amp; used only for underwriting</div>
+          <div class="msg">Required.</div>
+        </div>
+        <div class="field">
+          <label>Home Address <span class="req">*</span></label>
+          <input type="text" name="owner_address" data-req placeholder="Street, City, State, ZIP">
+          <div class="msg">Required.</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="addowner-box">
+        <div class="field" style="gap:4px">
+          <label style="font-size:14.5px">Is there a second owner with 20%+ ownership?</label>
+          <div class="toggle-row" id="addOwnerToggle" style="max-width:280px">
+            <div class="toggle" data-v="no">No</div>
+            <div class="toggle" data-v="yes">Yes, add owner</div>
+          </div>
+        </div>
+        <div class="addowner-fields" id="addOwnerFields">
+          <div class="grid">
+            <div class="field"><label>First Name</label><input type="text" name="owner2_first"></div>
+            <div class="field"><label>Last Name</label><input type="text" name="owner2_last"></div>
+            <div class="field"><label>Mobile Number</label><input type="tel" name="owner2_mobile"></div>
+            <div class="field"><label>Email</label><input type="email" name="owner2_email"></div>
+            <div class="field"><label>Date of Birth</label><input type="text" name="owner2_dob" placeholder="MM/DD/YYYY" maxlength="10"></div>
+            <div class="field"><label>Ownership %</label><input type="text" inputmode="numeric" name="owner2_pct"></div>
+            <div class="field"><label>Social Security Number</label><input type="text" name="owner2_ssn" placeholder="XXX-XX-XXXX" maxlength="11"></div>
+            <div class="field"><label>Home Address</label><input type="text" name="owner2_address"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 : REVIEW -->
+    <div class="step" data-step="3">
+      <h2>Review &amp; submit</h2>
+      <p class="sub">Please confirm everything looks right before submitting.</p>
+      <div id="reviewOut"></div>
+      <div class="consent">
+        <input type="checkbox" id="consent" data-req>
+        <label for="consent">By submitting, I certify the information above is accurate and I authorize FundingSource and its funding partners to contact me by phone, text, and email, and to obtain business and personal credit reports to evaluate my application. Consent is not a condition of any purchase.</label>
+      </div>
+      <div class="msg" id="consentMsg" style="display:none;font-size:12px;color:var(--err);margin-top:6px">Please confirm to continue.</div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="actions" id="actions">
+      <button type="button" class="btn btn-ghost" id="backBtn" style="visibility:hidden">&larr; Back</button>
+      <span class="step-count" id="stepCount">Step 1 of 4</span>
+      <button type="button" class="btn btn-primary" id="nextBtn">Continue &rarr;</button>
+    </div>
+  </form>
+
+  <!-- SUCCESS -->
+  <div class="form-body success" id="success">
+    <div class="ok">&#10003;</div>
+    <h2>Application received!</h2>
+    <p>Thanks &mdash; your application is in. One of our funding specialists will review it and reach out shortly, often within a few hours during business hours.</p>
+    <a href="tel:+15162416738" class="callnow">Need funds fast? Call us now: (516) 241-6738</a>
+  </div>
+
+</div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>&copy; 2026 FundingSource. All rights reserved.</div>
+    <div class="disc">FundingSource is not a lender. We help connect business owners with funding partners. All financing is subject to approval and partner terms. Amounts, rates, and terms vary based on business qualifications.</div>
+  </div>
+</footer>
+
+<script>
+/* ---- populate dropdowns ---- */
+var STATES=["Alabama","Alaska","American Samoa","Arizona","Arkansas","California","Canada","Colorado","Connecticut","Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Northern Mariana Islands","Ohio","Oklahoma","Oregon","Pennsylvania","Puerto Rico","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","U.S. Virgin Islands","Utah","Vermont","Virginia","Washington","Washington D.C.","West Virginia","Wisconsin","Wyoming"];
+var INDUSTRIES=["Accommodation & Food","Admin/Support/Waste","Agriculture/Forestry","Animal Grooming","Arts & Entertainment","Architecture","Auto Body","Auto Sales","Auto Repairs","Auto Rentals","Auto Used Car Sales","Barber Shop","Business Management","Cannabis Industry","Concrete/Masonry","Construction","Consulting","Daycare","E-Commerce","Electrical","Educational Services","Equipment Sales/Rental/Repairs","Finance & Insurance","Fire Protection/Safety","Funeral Homes","Gas Station","Grocery Store","Haircutting/Salon/Relaxation","Healthcare & Social","Home Healthcare","HVAC","Insurance Company","Janitorial Services","Junkyard","Landscaping","Law Firm","Liquor Stores","Manufacturing","Marketing & Advertising","Mining","Non-Profit","Other","Painting","Pharmacy","Plumbing","Prof/Sci/Tech Services","Property Management","Public Administration","Real Estate","Restaurant","Retail","Security Company","Senior Home","Staffing","Tax Services","Telecommunications","Tobacco & Cigar Shops","Towing Service","Transport/Warehouse/Distribution","Trucking","Utilities","Vitamins & Supplements","Veterinarian","Wholesale"];
+function fill(id,arr){var s=document.getElementById(id);arr.forEach(function(v){var o=document.createElement('option');o.textContent=v;s.appendChild(o);});}
+fill('stateSel',STATES);fill('industrySel',INDUSTRIES);
+
+/* ---- number formatting for currency fields ---- */
+['amount_requested','annual_revenue'].forEach(function(n){
+  var el=document.querySelector('[name="'+n+'"]');
+  el.addEventListener('input',function(){
+    var v=this.value.replace(/[^0-9]/g,'');
+    this.value=v?Number(v).toLocaleString('en-US'):'';
+  });
+});
+/* SSN mask */
+document.querySelectorAll('[name="owner_ssn"],[name="owner2_ssn"]').forEach(function(el){
+  el.addEventListener('input',function(){
+    var v=this.value.replace(/[^0-9]/g,'').slice(0,9);
+    if(v.length>5)this.value=v.slice(0,3)+'-'+v.slice(3,5)+'-'+v.slice(5);
+    else if(v.length>3)this.value=v.slice(0,3)+'-'+v.slice(3);
+    else this.value=v;
+  });
+});
+
+/* ---- purpose chip highlight ---- */
+document.querySelectorAll('#purposeChips .chip').forEach(function(c){
+  var cb=c.querySelector('input');
+  cb.addEventListener('change',function(){c.classList.toggle('sel',cb.checked);
+    if(cb.checked)document.getElementById('purposeMsg').parentElement.classList.remove('err');});
+});
+
+/* ---- DBA toggle ---- */
+document.querySelectorAll('#dbaToggle .toggle').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('#dbaToggle .toggle').forEach(function(x){x.classList.remove('on');});
+    t.classList.add('on');
+    var v=t.dataset.v;document.querySelector('[name="dba_same"]').value=v;
+    var f=document.getElementById('dbaField');var inp=f.querySelector('input');
+    if(v==='no'){f.style.display='';inp.setAttribute('data-req','');}
+    else{f.style.display='none';inp.removeAttribute('data-req');f.classList.remove('err');inp.value='';}
+  });
+});
+
+/* ---- additional owner toggle ---- */
+document.querySelectorAll('#addOwnerToggle .toggle').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('#addOwnerToggle .toggle').forEach(function(x){x.classList.remove('on');});
+    t.classList.add('on');
+    document.getElementById('addOwnerFields').classList.toggle('show',t.dataset.v==='yes');
+  });
+});
+
+/* ---- multi-step logic ---- */
+var steps=document.querySelectorAll('.step');
+var cur=0;var last=steps.length-1;
+var backBtn=document.getElementById('backBtn'),nextBtn=document.getElementById('nextBtn'),stepCount=document.getElementById('stepCount');
+
+function show(i){
+  steps.forEach(function(s,idx){s.classList.toggle('active',idx===i);});
+  document.querySelectorAll('.pstep').forEach(function(p,idx){
+    p.classList.toggle('active',idx===i);
+    p.classList.toggle('done',idx<i);
+    var num=p.querySelector('.num');
+    num.classList.toggle('check',idx<i);
+    if(idx<i)num.textContent='';else if(!num.classList.contains('check'))num.textContent=idx+1;
+  });
+  backBtn.style.visibility=i===0?'hidden':'visible';
+  stepCount.textContent='Step '+(i+1)+' of '+steps.length;
+  nextBtn.textContent=i===last?'Submit Application ✓':'Continue →';
+  nextBtn.className='btn '+(i===last?'btn-submit':'btn-primary');
+  if(i===last)buildReview();
+  document.getElementById('card').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function validate(i){
+  var ok=true;
+  var stepEl=steps[i];
+  stepEl.querySelectorAll('[data-req]').forEach(function(el){
+    var field=el.closest('.field');var val=(el.value||'').trim();
+    var bad=!val;
+    if(el.type==='email'&&val)bad=!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+    if(el.id==='consent')bad=!el.checked;
+    if(field){field.classList.toggle('err',bad);}
+    if(el.id==='consent'){document.getElementById('consentMsg').style.display=bad?'block':'none';}
+    if(bad)ok=false;
+  });
+  /* purpose checkboxes on step 0 */
+  if(i===0){
+    var any=document.querySelectorAll('#purposeChips input:checked').length>0;
+    document.getElementById('purposeMsg').parentElement.classList.toggle('err',!any);
+    if(!any)ok=false;
+  }
+  return ok;
+}
+
+nextBtn.addEventListener('click',function(){
+  if(!validate(cur)){
+    var f=steps[cur].querySelector('.err');if(f)f.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  if(cur===last){submitForm();return;}
+  cur++;show(cur);
+});
+backBtn.addEventListener('click',function(){if(cur>0){cur--;show(cur);}});
+
+/* clear err on input */
+document.getElementById('appForm').addEventListener('input',function(e){
+  var f=e.target.closest('.field');if(f)f.classList.remove('err');
+});
+
+/* ---- build review ---- */
+function labelFor(el){var f=el.closest('.field');if(!f)return el.name;var l=f.querySelector('label');return l?l.textContent.replace('*','').trim():el.name;}
+function buildReview(){
+  var groups=[
+    {t:'Funding Request',names:['amount_requested','annual_revenue']},
+    {t:'Business',names:['legal_name','dba_name','ein','business_phone','company_type','state_incorp','start_date','industry','business_address','website','description']},
+    {t:'Owner',names:['owner_first','owner_last','owner_mobile','owner_email','owner_dob','owner_pct','owner_ssn','owner_address']}
+  ];
+  var purposes=Array.from(document.querySelectorAll('#purposeChips input:checked')).map(function(c){return c.value;});
+  var html='';
+  html+='<div class="review-group"><h3>Funding Request</h3><div class="review-list">';
+  html+=rrow('Amount Requested','$'+(gv('amount_requested')||''));
+  html+=rrow('Annual Revenue','$'+(gv('annual_revenue')||''));
+  html+=rrow('Use of Funds',purposes.join(', '));
+  html+='</div></div>';
+  groups.slice(1).forEach(function(g){
+    var rows='';
+    g.names.forEach(function(n){var v=gv(n);if(n==='owner_ssn'&&v)v='•••-••-'+v.slice(-4);if(v)rows+=rrow(prettyName(n),v);});
+    if(rows)html+='<div class="review-group"><h3>'+g.t+'</h3><div class="review-list">'+rows+'</div></div>';
+  });
+  if(document.querySelector('#addOwnerToggle .toggle.on')&&document.querySelector('#addOwnerToggle .toggle.on').dataset.v==='yes'){
+    var rows2='';['owner2_first','owner2_last','owner2_mobile','owner2_email','owner2_dob','owner2_pct','owner2_ssn','owner2_address'].forEach(function(n){var v=gv(n);if(n==='owner2_ssn'&&v)v='•••-••-'+v.slice(-4);if(v)rows2+=rrow(prettyName(n),v);});
+    if(rows2)html+='<div class="review-group"><h3>Additional Owner</h3><div class="review-list">'+rows2+'</div></div>';
+  }
+  document.getElementById('reviewOut').innerHTML=html;
+}
+function gv(n){var el=document.querySelector('[name="'+n+'"]');return el?el.value.trim():'';}
+function rrow(k,v){return '<div class="r"><span class="k">'+k+'</span><span class="v">'+(v||'&mdash;')+'</span></div>';}
+function prettyName(n){var m={legal_name:'Legal Name',dba_name:'DBA Name',ein:'Tax ID / EIN',business_phone:'Business Phone',company_type:'Company Type',state_incorp:'State of Incorp',start_date:'Start Date',industry:'Industry',business_address:'Business Address',website:'Website',description:'Description',owner_first:'First Name',owner_last:'Last Name',owner_mobile:'Mobile',owner_email:'Email',owner_dob:'Date of Birth',owner_pct:'Ownership %',owner_ssn:'SSN',owner_address:'Home Address',owner2_first:'First Name',owner2_last:'Last Name',owner2_mobile:'Mobile',owner2_email:'Email',owner2_dob:'Date of Birth',owner2_pct:'Ownership %',owner2_ssn:'SSN',owner2_address:'Home Address'};return m[n]||n;}
+
+/* ---- submit ---- */
+var ENDPOINT=''; /* <-- funding email / Apps Script URL goes here */
+function submitForm(){
+  if(!validate(last))return;
+  nextBtn.disabled=true;nextBtn.textContent='Submitting…';
+  var fd=new FormData(document.getElementById('appForm'));
+  fd.set('use_of_funds',Array.from(document.querySelectorAll('#purposeChips input:checked')).map(function(c){return c.value;}).join(', '));
+  fd.append('_subject','New Funding Application');
+  function done(){
+    document.getElementById('appForm').style.display='none';
+    document.getElementById('success').style.display='block';
+    document.getElementById('card').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  if(!ENDPOINT){setTimeout(done,600);return;} /* preview mode: show success */
+  fetch(ENDPOINT,{method:'POST',body:fd}).then(function(r){if(!r.ok)throw 0;done();})
+  .catch(function(){nextBtn.disabled=false;nextBtn.textContent='Submit Application ✓';
+    alert('Something went wrong submitting. Please call us at (516) 241-6738 and we’ll help right away.');});
+}
+</script>
+</body>
+</html>
